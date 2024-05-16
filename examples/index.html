@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>gdt-qrcode</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+
+  <body>
+    <script src="https://unpkg.com/vue@latest"></script>
+    <!-- <script src="../dist/gdt-qrcode.iife.js"></script> -->
+    <!-- <script src="https://unpkg.com/gdt-qrcode@latest/dist/gdt-qrcode.umd.js"></script> -->
+    <script src="https://unpkg.com/gdt-qrcode@latest/dist/gdt-qrcode.iife.js"></script>
+    <div id="app">
+      <a
+        href="https://github.com/jizai1125/gdt-qrcode"
+        class="github-corner"
+        target="_blank"
+        aria-label="View source on Github">
+        <svg
+          width="80"
+          height="80"
+          viewBox="0 0 250 250"
+          :style="{fill: color, color: '#fff', position: 'absolute', top: 0, border: 0, right: 0}"
+          aria-hidden="true">
+          <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+          <path
+            d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+            fill="currentColor"
+            style="transform-origin: 130px 106px"
+            class="octo-arm"></path>
+          <path
+            d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+            fill="currentColor"
+            class="octo-body"></path>
+        </svg>
+      </a>
+      <color-title title="gdt-qrcode" desc="政务钉钉扫码登录" :color="color"></color-title>
+      <div class="app-container">
+        <div class="action-bar">
+          <button @click="changeUrl">change url</button>
+          <button @click="changeOnlyCode">only show code | {{ onlyShowCode }}</button>
+          <button @click="changeLogo">show logo | {{ showLogo }}</button>
+          <button @click="changeStyle">
+            change style | width: {{ style.width }}px, height: {{ style.height }}px
+          </button>
+        </div>
+        <h3 class="title">方式一：使用 js 方法</h3>
+        <div class="qrcode-container">
+          <div ref="qrcodeContainerRef" class="bordered"></div>
+        </div>
+        <div class="url">完整地址：<code>{{ qrcodeInst1?.url }}</code></div>
+        <div class="divider"></div>
+        <h3 class="title">方式二：使用 Vue 组件</h3>
+        <div class="qrcode-container">
+          <qr-code
+            class="bordered"
+            :url="url"
+            client-id="xs_jcsc_dingoa"
+            redirect-uri="http://195.195.32.162:9000"
+            :only-show-code="onlyShowCode"
+            :show-logo="showLogo"
+            :width="style.width"
+            :height="style.height"
+            :block-line="!toggleStyle"
+            @load="handleLoad"
+            @scanned="handleScanned" />
+        </div>
+        <div class="url">完整地址：<code>{{ qrcodeInst2?.url }}</code></div>
+      </div>
+    </div>
+    <script>
+      const { ref, computed, onMounted } = Vue
+      const App = {
+        name: 'App',
+        setup() {
+          // --- 1. js 方法加载
+          const qrcodeContainerRef = ref()
+          const qrcodeInst1 = ref()
+          onMounted(() => {
+            qrcodeInst1.value = GdtQRCode.initQRCode(qrcodeContainerRef.value, {
+              clientId: 'xs_jcsc_dingoa',
+              redirectUri: 'http://195.195.32.162:9000',
+              onScanned(code) {
+                console.log('js 方法扫码成功', code)
+              }
+            })
+          })
+
+          // --- 2. 使用 Vue 组件
+          const qrcodeInst2 = ref()
+          function handleLoad(inst) {
+            qrcodeInst2.value = inst
+          }
+          function handleScanned(code) {
+            console.log('vue event 扫码成功', code)
+          }
+          const defaultUrl =
+            'https://login-pro.ding.zj.gov.cn/oauth2/auth.htm?response_type=code&scope=get_user_info&authType=QRCODE&embedMode=true'
+          const url = ref(defaultUrl)
+          const toggleUrl = ref(false)
+          function changeUrl() {
+            url.value = toggleUrl.value ? defaultUrl : 'https://login-pro.ding.zj.gov.cn/xxxx'
+            qrcodeInst1.value?.updateUrl(url.value)
+            toggleUrl.value = !toggleUrl.value
+          }
+
+          const style = ref({})
+          const toggleStyle = ref(false)
+          function changeStyle() {
+            toggleStyle.value = !toggleStyle.value
+            style.value.width = toggleStyle.value ? 400 : 220
+            style.value.height = toggleStyle.value ? 400 : 320
+            qrcodeInst1.value?.updateStyle(style.value)
+          }
+          const showLogo = ref(true)
+          function changeLogo() {
+            showLogo.value = !showLogo.value
+            qrcodeInst1.value?.updateStyle({ showLogo: showLogo.value })
+          }
+          const onlyShowCode = ref(false)
+          function changeOnlyCode() {
+            onlyShowCode.value = !onlyShowCode.value
+            qrcodeInst1.value?.updateStyle({ onlyShowCode: onlyShowCode.value })
+          }
+          // page style
+          const color = ref(getRandomColor())
+          setInterval(() => {
+            color.value = getRandomColor()
+          }, 10000)
+          return {
+            qrcodeContainerRef,
+            color,
+            qrcodeInst1,
+            qrcodeInst2,
+            url,
+            style,
+            showLogo,
+            onlyShowCode,
+            changeLogo,
+            changeStyle,
+            changeUrl,
+            changeOnlyCode,
+            handleLoad,
+            handleScanned
+          }
+        }
+      }
+
+      const ColorTitle = {
+        name: 'ColorTitle',
+        props: {
+          title: String,
+          desc: String,
+          color: String
+        },
+        setup(props) {
+          return () =>
+            Vue.h('div', { style: 'display: flex; align-items: center;flex-direction: column;' }, [
+              Vue.h('h1', { style: { color: props.color, margin: '0 0 5px' } }, props.title),
+              Vue.h('span', { style: 'color: #494949; margin-bottom: 40px;' }, props.desc)
+            ])
+        }
+      }
+      const app = Vue.createApp(App)
+      app.component('QrCode', GdtQRCode.QRCode)
+      app.component('ColorTitle', ColorTitle)
+
+      app.mount('#app')
+
+      function getRandomColor() {
+        const colors = [
+          '#f44336',
+          '#e91e63',
+          '#9c27b0',
+          '#673ab7',
+          '#3f51b5',
+          '#2196f3',
+          '#00bcd4',
+          '#009688',
+          '#8bc34a',
+          '#4caf50',
+          '#cddc39',
+          '#ffc107',
+          '#ff9800',
+          '#ff5722',
+          '#795548',
+          '#9e9e9e',
+          '#607d8b'
+        ]
+        const colorLen = colors.length
+        const idx = parseInt(Math.random() * (colorLen - 1))
+        return colors[idx]
+      }
+    </script>
+  </body>
+</html>
