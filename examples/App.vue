@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { QRCode, initQRCode, type QRCodeConfig, type QRCodeInst } from '../src'
+import { GdtQRCode, VGdtQRCode, type QRCodeOptions, type QRCodeInst } from '../src'
 
 // --- 1. js 方法加载
 const qrcodeContainerRef = ref<HTMLElement>()
 const qrcodeInst1 = ref<QRCodeInst>()
 onMounted(() => {
-  qrcodeInst1.value = initQRCode(qrcodeContainerRef.value!, {
+  qrcodeInst1.value = new GdtQRCode(qrcodeContainerRef.value!, {
     clientId: 'xs_jcsc_dingoa',
     redirectUri: 'http://195.195.32.162:9000',
     onScanned(code: string) {
@@ -33,7 +33,7 @@ function changeUrl() {
   toggleUrl.value = !toggleUrl.value
 }
 
-const style = ref<QRCodeConfig>({ width: '100%', height: 320 })
+const style = ref<QRCodeOptions>({ width: '100%', height: 320 })
 const toggleStyle = ref(false)
 function changeStyle() {
   toggleStyle.value = !toggleStyle.value
@@ -51,6 +51,11 @@ function changeOnlyCode() {
   onlyShowCode.value = !onlyShowCode.value
   qrcodeInst1.value?.updateStyle({ onlyShowCode: onlyShowCode.value })
 }
+const toggleDestroy = ref(false)
+function destroy() {
+  toggleDestroy.value ? qrcodeInst1.value?.render() : qrcodeInst1.value?.destroy()
+  toggleDestroy.value = !toggleDestroy.value
+}
 </script>
 
 <template>
@@ -62,6 +67,7 @@ function changeOnlyCode() {
       <button @click="changeStyle">
         change style | width: {{ style.width }}, height: {{ style.height }}
       </button>
+      <button @click="destroy">{{ toggleDestroy ? 'recreate' : 'destroy' }}</button>
     </div>
     <h3 class="title">方式一：使用 js 方法</h3>
     <div class="qrcode-container">
@@ -74,7 +80,7 @@ function changeOnlyCode() {
 
     <h3 class="title">方式二：使用 Vue 组件</h3>
     <div class="qrcode-container">
-      <QRCode
+      <VGdtQRCode
         class="bordered"
         :url="url"
         client-id="xs_jcsc_dingoa"

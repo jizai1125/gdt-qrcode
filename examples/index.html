@@ -8,9 +8,9 @@
 
   <body>
     <script src="https://unpkg.com/vue@latest"></script>
-    <!-- <script src="../dist/gdt-qrcode.iife.js"></script> -->
+    <script src="../dist/gdt-qrcode.umd.js"></script>
     <!-- <script src="https://unpkg.com/gdt-qrcode@latest/dist/gdt-qrcode.umd.js"></script> -->
-    <script src="https://unpkg.com/gdt-qrcode@latest/dist/gdt-qrcode.iife.js"></script>
+    <!-- <script src="https://unpkg.com/gdt-qrcode@latest/dist/gdt-qrcode.iife.js"></script> -->
     <div id="app">
       <a
         href="https://github.com/jizai1125/gdt-qrcode"
@@ -42,8 +42,9 @@
           <button @click="changeOnlyCode">only show code | {{ onlyShowCode }}</button>
           <button @click="changeLogo">show logo | {{ showLogo }}</button>
           <button @click="changeStyle">
-            change style | width: {{ style.width }}px, height: {{ style.height }}px
+            change style | width: {{ style.width }}, height: {{ style.height }}px
           </button>
+          <button @click="destroy">{{ toggleDestroy ? 'recreate' : 'destroy' }}</button>
         </div>
         <h3 class="title">方式一：使用 js 方法</h3>
         <div class="qrcode-container">
@@ -78,7 +79,8 @@
           const qrcodeContainerRef = ref()
           const qrcodeInst1 = ref()
           onMounted(() => {
-            qrcodeInst1.value = GdtQRCode.initQRCode(qrcodeContainerRef.value, {
+            console.log(GdtQRCode)
+            qrcodeInst1.value = new GdtQRCode.GdtQRCode(qrcodeContainerRef.value, {
               clientId: 'xs_jcsc_dingoa',
               redirectUri: 'http://195.195.32.162:9000',
               onScanned(code) {
@@ -105,13 +107,13 @@
             toggleUrl.value = !toggleUrl.value
           }
 
-          const style = ref({})
+          const style = ref({ width: '100%', height: 320 })
           const toggleStyle = ref(false)
           function changeStyle() {
             toggleStyle.value = !toggleStyle.value
-            style.value.width = toggleStyle.value ? 400 : 220
+            style.value.width = toggleStyle.value ? 400 : '100%'
             style.value.height = toggleStyle.value ? 400 : 320
-            qrcodeInst1.value?.updateStyle(style.value)
+            qrcodeInst1.value?.updateStyle({ ...style.value, blockLine: !toggleStyle.value })
           }
           const showLogo = ref(true)
           function changeLogo() {
@@ -123,12 +125,20 @@
             onlyShowCode.value = !onlyShowCode.value
             qrcodeInst1.value?.updateStyle({ onlyShowCode: onlyShowCode.value })
           }
+          const toggleDestroy = ref(false)
+          function destroy() {
+            toggleDestroy.value ? qrcodeInst1.value?.render() : qrcodeInst1.value?.destroy()
+            toggleDestroy.value = !toggleDestroy.value
+          }
           // page style
           const color = ref(getRandomColor())
           setInterval(() => {
             color.value = getRandomColor()
           }, 10000)
           return {
+            toggleStyle,
+            toggleDestroy,
+            destroy,
             qrcodeContainerRef,
             color,
             qrcodeInst1,
@@ -163,7 +173,7 @@
         }
       }
       const app = Vue.createApp(App)
-      app.component('QrCode', GdtQRCode.QRCode)
+      app.component('QrCode', GdtQRCode.VGdtQRCode)
       app.component('ColorTitle', ColorTitle)
 
       app.mount('#app')

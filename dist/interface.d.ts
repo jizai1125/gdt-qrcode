@@ -1,20 +1,20 @@
 export interface QRCodeInst {
-    config: QRCodeConfig;
-    dom: HTMLElement;
+    dom: HTMLElement | undefined;
     domClassName: string;
     iframe: HTMLIFrameElement | undefined;
     url: string | undefined;
+    options: QRCodeOptions;
     render: () => void;
-    update: (config?: QRCodeConfig) => void;
+    update: (options?: QRCodeOptions) => void;
     updateUrl: (url?: string) => void;
-    updateStyle: (config?: QRCodeStyleConfig) => void;
-    messageHandler: (event: MessageEvent) => void;
+    updateStyle: (options?: QRCodeOptions) => void;
+    destroy: () => void;
 }
-export interface QRCodeConfig {
+export interface QRCodeOptions {
     clientId?: string;
     redirectUri?: string;
     domain?: string;
-    url?: string | ((config: QRCodeConfig) => string);
+    url?: string | ((options: QRCodeOptions) => string);
     width?: number | string;
     height?: number | string;
     blockLine?: boolean;
@@ -22,8 +22,8 @@ export interface QRCodeConfig {
     onlyShowCode?: boolean;
     onScanned?: (code: string, data: object) => void;
 }
-export type QRCodeStyleConfig = Omit<QRCodeConfig, 'clientId' | 'redirectUri' | 'url'>;
-export type InitQRCodeConfig = MakeRequired<QRCodeConfig, 'clientId' | 'redirectUri'>;
+export type QRCodeStyleOptions = Omit<QRCodeOptions, 'clientId' | 'redirectUri' | 'url'>;
+export type InitQRCodeOptions = MakeRequired<QRCodeOptions, 'clientId' | 'redirectUri'>;
 type MakeRequired<T, K extends keyof T = never> = {
     [P in K]-?: T[P];
 } & {

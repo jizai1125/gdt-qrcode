@@ -1,16 +1,16 @@
 export interface QRCodeInst {
-  config: QRCodeConfig
-  dom: HTMLElement
+  dom: HTMLElement | undefined
   domClassName: string
   iframe: HTMLIFrameElement | undefined
   url: string | undefined
+  options: QRCodeOptions
   render: () => void
-  update: (config?: QRCodeConfig) => void
+  update: (options?: QRCodeOptions) => void
   updateUrl: (url?: string) => void
-  updateStyle: (config?: QRCodeStyleConfig) => void
-  messageHandler: (event: MessageEvent) => void
+  updateStyle: (options?: QRCodeOptions) => void
+  destroy: () => void
 }
-export interface QRCodeConfig {
+export interface QRCodeOptions {
   // 应用标识
   clientId?: string
   // 回调地址
@@ -18,7 +18,7 @@ export interface QRCodeConfig {
   // 扫码登录域名
   domain?: string
   // 扫码登录完整地址
-  url?: string | ((config: QRCodeConfig) => string)
+  url?: string | ((options: QRCodeOptions) => string)
   // iframe 宽
   width?: number | string
   // iframe 高
@@ -33,8 +33,8 @@ export interface QRCodeConfig {
   onScanned?: (code: string, data: object) => void
 }
 
-export type QRCodeStyleConfig = Omit<QRCodeConfig, 'clientId' | 'redirectUri' | 'url'>
-export type InitQRCodeConfig = MakeRequired<QRCodeConfig, 'clientId' | 'redirectUri'>
+export type QRCodeStyleOptions = Omit<QRCodeOptions, 'clientId' | 'redirectUri' | 'url'>
+export type InitQRCodeOptions = MakeRequired<QRCodeOptions, 'clientId' | 'redirectUri'>
 
 type MakeRequired<T, K extends keyof T = never> = {
   [P in K]-?: T[P]

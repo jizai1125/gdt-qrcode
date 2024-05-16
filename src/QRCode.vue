@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { initQRCode, defaultConfig } from './lib'
-import type { QRCodeConfig, QRCodeInst } from './interface'
+import { GdtQRCode, defaultOptions } from './lib'
+import type { QRCodeOptions, QRCodeInst } from './interface'
 
-const props = withDefaults(defineProps<QRCodeConfig>(), defaultConfig)
+const props = withDefaults(defineProps<QRCodeOptions>(), defaultOptions)
 const emit = defineEmits<{
   load: [inst: QRCodeInst]
   scanned: [code: string, data: object]
@@ -49,13 +49,14 @@ function handleScanned(code: string, data: object) {
   emit('scanned', code, data)
 }
 onMounted(() => {
-  qrCodeInst.value = initQRCode(qrcodeContainerRef.value!, { ...props, onScanned: handleScanned })
+  qrCodeInst.value = new GdtQRCode(qrcodeContainerRef.value!, {
+    ...props,
+    onScanned: handleScanned
+  })
   doEmitLoad()
 })
 onUnmounted(() => {
-  if (qrCodeInst.value) {
-    window.removeEventListener('message', qrCodeInst.value.messageHandler)
-  }
+  qrCodeInst.value?.destroy()
 })
 </script>
 

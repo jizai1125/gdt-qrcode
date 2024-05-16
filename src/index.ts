@@ -1,3 +1,3 @@
-export { default as QRCode } from './QRCode.vue'
-export * from './lib'
-export * from './interface'
+export { default as VGdtQRCode } from './QRCode.vue'
+export type { QRCodeInst, QRCodeOptions, InitQRCodeOptions, QRCodeStyleOptions } from './interface'
+export { GdtQRCode, defaultOptions } from './lib'

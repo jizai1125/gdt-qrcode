@@ -16,9 +16,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolvePath('src/index.ts'),
-      name: 'GdtQRCode',
-      formats: ['es', 'umd', 'iife'],
-      fileName: (format) => `${pkg.name}.${format}.js`
+      formats: ['es'],
+      fileName: (format) => `${pkg.name}.js`
     },
     rollupOptions: {
       external: ['vue'],

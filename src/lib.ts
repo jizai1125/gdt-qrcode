@@ -1,8 +1,8 @@
-import type { QRCodeConfig, QRCodeInst, QRCodeStyleConfig, InitQRCodeConfig } from './interface'
+import type { QRCodeOptions, QRCodeStyleOptions, InitQRCodeOptions } from './interface'
 import { genURLQueryString, formatLength } from './util'
 
 const defaultDomain = 'https://login-pro.ding.zj.gov.cn'
-export const defaultConfig: QRCodeConfig = {
+export const defaultOptions: QRCodeOptions = {
   domain: defaultDomain,
   url: `${defaultDomain}/oauth2/auth.htm?response_type=code&scope=get_user_info&authType=QRCODE&embedMode=true`,
   width: '100%',
@@ -12,82 +12,88 @@ export const defaultConfig: QRCodeConfig = {
   blockLine: true
 }
 
-export function initQRCode(dom: HTMLElement, config: InitQRCodeConfig): QRCodeInst | undefined {
-  if (!dom) {
-    console.warn('[gdt-qrcode]', 'dom is not exist')
-    return
-  }
-  const ctx: QRCodeInst = {
-    config,
-    dom,
-    domClassName: 'gdt-qrcode-wrapper',
-    iframe: undefined,
-    url: undefined,
-    render,
-    update,
-    updateUrl,
-    updateStyle,
-    messageHandler
-  }
-
-  ctx.render()
-  window.addEventListener('message', messageHandler)
-  function messageHandler(evt: MessageEvent) {
-    if (evt.origin.match(ctx.config.domain!)) {
-      ctx.config.onScanned?.(evt.data.code, evt.data)
+export class GdtQRCode {
+  dom: HTMLElement | undefined
+  domClassName = 'gdt-qrcode-wrapper'
+  options: QRCodeOptions = defaultOptions
+  iframe: HTMLIFrameElement | undefined
+  url: string | undefined
+  constructor(dom: HTMLElement, options: InitQRCodeOptions) {
+    this.options = {
+      ...defaultOptions,
+      ...options
     }
+    this.dom = dom
+    this.render()
+    this.registerMessage()
   }
-  function render() {
-    ctx.dom.innerHTML = ''
-    ctx.dom.classList.add(ctx.domClassName)
+  render(options?: QRCodeOptions): void {
+    if (!this.dom) return
+    this.dom.innerHTML = ''
+    this.dom.classList.add(this.domClassName)
     const iframe = document.createElement('iframe')
-    ctx.iframe = iframe
-    ctx.update()
-    ctx.dom.appendChild(iframe)
+    this.iframe = iframe
+    this.update(options)
+    this.dom.appendChild(iframe)
   }
-  function update(config?: QRCodeConfig) {
-    if (!ctx.iframe) return
-    _updateConfig(config)
-    ctx.updateUrl()
-    ctx.updateStyle()
+  update(options?: QRCodeOptions): void {
+    this.updateOptions(options)
+    this.updateUrl()
+    this.updateStyle()
   }
-  function updateUrl(url?: string) {
-    if (!ctx.iframe) return
+  updateOptions(options?: QRCodeOptions): QRCodeOptions {
+    this.options = {
+      ...this.options,
+      ...options
+    }
+    return this.options
+  }
+  updateUrl(url?: string): void {
+    if (!this.iframe) return
     if (url) {
-      _updateConfig({ url })
+      this.updateOptions({ url })
     }
-    ctx.url = _formatUrl()
-    ctx.iframe.src = ctx.url
+    this.url = this.formatUrl()
+    this.iframe.src = this.url
   }
-  function updateStyle(config?: QRCodeStyleConfig) {
-    if (!ctx.iframe) return
-    const { width, height, showLogo, onlyShowCode, blockLine } = _updateConfig(config)
-    ctx.iframe.frameBorder = '0'
-    ctx.iframe.width = formatLength(width)
-    ctx.iframe.height = formatLength(height)
-    ctx.iframe.style.marginTop = onlyShowCode ? '-80px' : showLogo ? '0' : '-40px'
-    ctx.dom.style.display = blockLine ? 'block' : 'inline-block'
-    ctx.dom.style.overflow = 'hidden'
+  updateStyle(options?: QRCodeStyleOptions): void {
+    if (!this.iframe || !this.dom) return
+    const { width, height, showLogo, onlyShowCode, blockLine } = this.updateOptions(options)
+    this.iframe.frameBorder = '0'
+    this.iframe.width = formatLength(width)
+    this.iframe.height = formatLength(height)
+    this.iframe.style.marginTop = onlyShowCode ? '-80px' : showLogo ? '0' : '-40px'
+    this.dom.style.display = blockLine ? 'block' : 'inline-block'
+    this.dom.style.overflow = 'hidden'
   }
-
-  function _updateConfig(config?: QRCodeConfig): QRCodeConfig {
-    ctx.config = {
-      ...defaultConfig,
-      ...ctx.config,
-      ...config
+  destroy(): void {
+    if (this.iframe) {
+      this.iframe.remove()
+      this.iframe = undefined
     }
-    return ctx.config
+    this.url = undefined
+    this.offMessage()
   }
-  function _formatUrl(): string {
-    const { clientId, redirectUri, url } = ctx.config
+  private formatUrl(): string {
+    const { clientId, redirectUri, url } = this.options
     if (typeof url === 'function') {
-      return url(ctx.config)
+      return url(this.options)
     }
     return `${url}&${genURLQueryString({
       client_id: clientId,
       redirect_uri: redirectUri
     })}`
   }
-
-  return ctx
+  private offMessage(): void {
+    window.removeEventListener('message', this.messageHandler)
+  }
+  private registerMessage(): void {
+    this.offMessage()
+    window.addEventListener('message', this.messageHandler)
+  }
+  private messageHandler(evt: MessageEvent): void {
+    if (this.options && evt.origin.match(this.options.domain!)) {
+      this.options.onScanned?.(evt.data.code, evt.data)
+    }
+  }
 }

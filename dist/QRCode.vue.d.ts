@@ -1,14 +1,14 @@
-import type { QRCodeConfig, QRCodeInst } from './interface';
-declare const _default: import("vue").DefineComponent<__VLS_WithDefaults<__VLS_TypePropsToOption<QRCodeConfig>, QRCodeConfig>, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
+import type { QRCodeOptions, QRCodeInst } from './interface';
+declare const _default: import("vue").DefineComponent<__VLS_WithDefaults<__VLS_TypePropsToOption<QRCodeOptions>, QRCodeOptions>, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     load: (inst: QRCodeInst) => void;
     scanned: (code: string, data: object) => void;
-}, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToOption<QRCodeConfig>, QRCodeConfig>>> & {
+}, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToOption<QRCodeOptions>, QRCodeOptions>>> & {
     onScanned?: ((code: string, data: object) => any) | undefined;
     onLoad?: ((inst: QRCodeInst) => any) | undefined;
 }, {
     clientId: string;
     redirectUri: string;
-    url: string | ((config: QRCodeConfig) => string);
+    url: string | ((options: QRCodeOptions) => string);
     domain: string;
     width: string | number;
     height: string | number;
