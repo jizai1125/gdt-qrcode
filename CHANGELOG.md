@@ -1,3 +1,7 @@
+## [1.0.1](https://github.com/jizai1125/gdt-qrcode/compare/v1.0.0...v1.0.1) (2024-05-16)
+
+
+
 # 1.0.0 (2024-05-16)
 
 

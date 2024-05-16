@@ -231,7 +231,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
   });
-
   exports.GdtQRCode = $;
   exports.VGdtQRCode = x;
   exports.defaultOptions = m;
