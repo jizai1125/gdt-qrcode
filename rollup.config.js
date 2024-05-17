@@ -6,7 +6,14 @@ export default {
   input: 'dist/gdt-qrcode.js',
   plugins: [
     getBabelOutputPlugin({
-      presets: ['@babel/preset-env'],
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            targets: '>2%, not IE 11'
+          }
+        ]
+      ],
       allowAllFormats: true
     }),
     terser()
