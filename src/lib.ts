@@ -1,5 +1,5 @@
 import type { QRCodeOptions, QRCodeStyleOptions, InitQRCodeOptions } from './interface'
-import { genURLQueryString, formatLength } from './util'
+import { addUrlQueryParams, formatLength } from './util'
 
 const defaultDomain = 'https://login-pro.ding.zj.gov.cn'
 export const defaultOptions: QRCodeOptions = {
@@ -79,10 +79,10 @@ export class GdtQRCode {
     if (typeof url === 'function') {
       return url(this.options)
     }
-    return `${url}&${genURLQueryString({
+    return addUrlQueryParams(url as string, {
       client_id: clientId,
       redirect_uri: redirectUri
-    })}`
+    })
   }
   private offMessage(): void {
     window.removeEventListener('message', this.messageHandler)

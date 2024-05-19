@@ -1,14 +1,16 @@
-export function genURLQueryString(obj: { [k: string]: any }, skipNullOrUndefined = true): string {
-  const params = new URLSearchParams()
-  for (const key in obj) {
-    if (Object.hasOwn(obj, key)) {
-      const value = obj[key]
-      if (!skipNullOrUndefined || (value !== null && value !== undefined)) {
-        params.append(key, value)
-      }
+export function addUrlQueryParams(
+  url: string,
+  params: Record<string, any>,
+  skipNullOrUndefined = true
+): string {
+  const urlObj = new URL(url)
+  Object.keys(params).forEach((key) => {
+    const value = params[key]
+    if (!skipNullOrUndefined || (value !== null && value !== undefined)) {
+      urlObj.searchParams.append(key, value)
     }
-  }
-  return params.toString()
+  })
+  return urlObj.toString()
 }
 
 const pureNumberRegex = /^(\d|\.)+$/
