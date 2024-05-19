@@ -1,21 +1,19 @@
-var C = Object.defineProperty;
-var S = (o, e, t) => e in o ? C(o, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : o[e] = t;
-var d = (o, e, t) => (S(o, typeof e != "symbol" ? e + "" : e, t), t);
-import { defineComponent as _, mergeDefaults as v, ref as u, watch as f, onMounted as k, onUnmounted as U, openBlock as R, createElementBlock as b } from "vue";
-function M(o, e = !0) {
-  const t = new URLSearchParams();
-  for (const i in o)
-    if (Object.hasOwn(o, i)) {
-      const s = o[i];
-      (!e || s != null) && t.append(i, s);
-    }
-  return t.toString();
+var L = Object.defineProperty;
+var S = (o, e, t) => e in o ? L(o, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : o[e] = t;
+var a = (o, e, t) => (S(o, typeof e != "symbol" ? e + "" : e, t), t);
+import { defineComponent as _, mergeDefaults as b, ref as p, watch as f, onMounted as v, onUnmounted as U, openBlock as k, createElementBlock as M } from "vue";
+function O(o, e, t = !0) {
+  const i = new URL(o);
+  return Object.keys(e).forEach((r) => {
+    const n = e[r];
+    (!t || n != null) && i.searchParams.append(r, n);
+  }), i.toString();
 }
-const O = /^(\d|\.)+$/;
+const R = /^(\d|\.)+$/;
 function g(o, e = "px") {
-  return typeof o == "number" ? `${o}${e}` : typeof o == "string" && O.test(o) ? `${o}${e}` : o;
+  return typeof o == "number" ? `${o}${e}` : typeof o == "string" && R.test(o) ? `${o}${e}` : o;
 }
-const y = "https://login-pro.ding.zj.gov.cn", m = {
+const y = "https://login-pro.ding.zj.gov.cn", u = {
   domain: y,
   url: `${y}/oauth2/auth.htm?response_type=code&scope=get_user_info&authType=QRCODE&embedMode=true`,
   width: "100%",
@@ -24,15 +22,15 @@ const y = "https://login-pro.ding.zj.gov.cn", m = {
   onlyShowCode: !1,
   blockLine: !0
 };
-class $ {
+class E {
   constructor(e, t) {
-    d(this, "dom");
-    d(this, "domClassName", "gdt-qrcode-wrapper");
-    d(this, "options", m);
-    d(this, "iframe");
-    d(this, "url");
+    a(this, "dom");
+    a(this, "domClassName", "gdt-qrcode-wrapper");
+    a(this, "options", u);
+    a(this, "iframe");
+    a(this, "url");
     this.options = {
-      ...m,
+      ...u,
       ...t
     }, this.dom = e, this.render(), this.registerMessage();
   }
@@ -58,18 +56,18 @@ class $ {
   updateStyle(e) {
     if (!this.iframe || !this.dom)
       return;
-    const { width: t, height: i, showLogo: s, onlyShowCode: r, blockLine: h } = this.updateOptions(e);
-    this.iframe.frameBorder = "0", this.iframe.width = g(t), this.iframe.height = g(i), this.iframe.style.marginTop = r ? "-80px" : s ? "0" : "-40px", this.dom.style.display = h ? "block" : "inline-block", this.dom.style.overflow = "hidden";
+    const { width: t, height: i, showLogo: r, onlyShowCode: n, blockLine: h } = this.updateOptions(e);
+    this.iframe.frameBorder = "0", this.iframe.width = g(t), this.iframe.height = g(i), this.iframe.style.marginTop = n ? "-80px" : r ? "0" : "-40px", this.dom.style.display = h ? "block" : "inline-block", this.dom.style.overflow = "hidden";
   }
   destroy() {
     this.iframe && (this.iframe.remove(), this.iframe = void 0), this.url = void 0, this.offMessage();
   }
   formatUrl() {
     const { clientId: e, redirectUri: t, url: i } = this.options;
-    return typeof i == "function" ? i(this.options) : `${i}&${M({
+    return typeof i == "function" ? i(this.options) : O(i, {
       client_id: e,
       redirect_uri: t
-    })}`;
+    });
   }
   offMessage() {
     window.removeEventListener("message", this.messageHandler);
@@ -84,7 +82,7 @@ class $ {
 }
 const x = /* @__PURE__ */ _({
   __name: "QRCode",
-  props: /* @__PURE__ */ v({
+  props: /* @__PURE__ */ b({
     clientId: {},
     redirectUri: {},
     domain: {},
@@ -95,21 +93,21 @@ const x = /* @__PURE__ */ _({
     showLogo: { type: Boolean },
     onlyShowCode: { type: Boolean },
     onScanned: { type: Function }
-  }, m),
+  }, u),
   emits: ["load", "scanned"],
   setup(o, { emit: e }) {
-    const t = o, i = e, s = u(), r = u();
+    const t = o, i = e, r = p(), n = p();
     function h() {
-      r.value && i("load", { ...r.value });
+      n.value && i("load", { ...n.value });
     }
     f(
       [() => t.url, () => t.clientId, () => t.redirectUri],
-      ([n, a, l]) => {
-        var c;
-        (c = r.value) == null || c.update({
-          url: n,
-          clientId: a,
-          redirectUri: l
+      ([s, d, c]) => {
+        var l;
+        (l = n.value) == null || l.update({
+          url: s,
+          clientId: d,
+          redirectUri: c
         }), h();
       }
     ), f(
@@ -120,36 +118,36 @@ const x = /* @__PURE__ */ _({
         () => t.showLogo,
         () => t.blockLine
       ],
-      ([n, a, l, c, L]) => {
-        var p;
-        (p = r.value) == null || p.updateStyle({
-          width: n,
-          height: a,
-          onlyShowCode: l,
-          showLogo: c,
-          blockLine: L
+      ([s, d, c, l, C]) => {
+        var m;
+        (m = n.value) == null || m.updateStyle({
+          width: s,
+          height: d,
+          onlyShowCode: c,
+          showLogo: l,
+          blockLine: C
         });
       }
     );
-    function w(n, a) {
-      i("scanned", n, a);
+    function w(s, d) {
+      i("scanned", s, d);
     }
-    return k(() => {
-      r.value = new $(s.value, {
+    return v(() => {
+      n.value = new E(r.value, {
         ...t,
         onScanned: w
       }), h();
     }), U(() => {
-      var n;
-      (n = r.value) == null || n.destroy();
-    }), (n, a) => (R(), b("div", {
+      var s;
+      (s = n.value) == null || s.destroy();
+    }), (s, d) => (k(), M("div", {
       ref_key: "qrcodeContainerRef",
-      ref: s
+      ref: r
     }, null, 512));
   }
 });
 export {
-  $ as GdtQRCode,
+  E as GdtQRCode,
   x as VGdtQRCode,
-  m as defaultOptions
+  u as defaultOptions
 };
