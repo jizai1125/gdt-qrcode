@@ -36,8 +36,18 @@
       </a>
       <color-title title="gdt-qrcode" desc="政务钉钉扫码登录" :color="color"></color-title>
       <div class="app-container">
+        <div class="input-bar">
+          <div class="input-item">
+            <span class="labelx">client id：</span>
+            <input type="text" v-model="clientId" />
+          </div>
+          <div class="input-item">
+            <span class="labelx">redirect uri：</span>
+            <input type="text" v-model="redirectUri" />
+          </div>
+          <button @click="update">update</button>
+        </div>
         <div class="action-bar">
-          <button @click="changeUrl">change url</button>
           <button @click="changeOnlyCode">only show code | {{ onlyShowCode }}</button>
           <button @click="changeLogo">show logo | {{ showLogo }}</button>
           <button @click="changeStyle">
@@ -55,9 +65,8 @@
         <div class="qrcode-container">
           <qr-code
             class="bordered"
-            :url="url"
-            client-id="xs_jcsc_dingoa"
-            redirect-uri="http://195.195.32.162:9000"
+            :client-id="clientId"
+            :redirect-uri="redirectUri"
             :only-show-code="onlyShowCode"
             :show-logo="showLogo"
             :width="style.width"
@@ -74,14 +83,16 @@
       const App = {
         name: 'App',
         setup() {
+          const clientId = ref()
+          const redirectUri = ref()
           // --- 1. js 方法加载
           const qrcodeContainerRef = ref()
           const qrcodeInst1 = ref()
           onMounted(() => {
             console.log(GdtQRCode)
             qrcodeInst1.value = new GdtQRCode.GdtQRCode(qrcodeContainerRef.value, {
-              clientId: 'xs_jcsc_dingoa',
-              redirectUri: 'http://195.195.32.162:9000',
+              clientId: clientId.value,
+              redirectUri: redirectUri.value,
               onScanned(code) {
                 console.log('js 方法扫码成功', code)
               }
@@ -96,16 +107,12 @@
           function handleScanned(code) {
             console.log('vue event 扫码成功', code)
           }
-          const defaultUrl =
-            'https://login-pro.ding.zj.gov.cn/oauth2/auth.htm?response_type=code&scope=get_user_info&authType=QRCODE&embedMode=true'
-          const url = ref(defaultUrl)
-          const toggleUrl = ref(false)
-          function changeUrl() {
-            url.value = toggleUrl.value ? defaultUrl : 'https://login-pro.ding.zj.gov.cn/xxxx'
-            qrcodeInst1.value?.updateUrl(url.value)
-            toggleUrl.value = !toggleUrl.value
+          function update() {
+            qrcodeInst1.value?.update({
+              clientId: clientId.value,
+              redirectUri: redirectUri.value
+            })
           }
-
           const style = ref({ width: '100%', height: 320 })
           const toggleStyle = ref(false)
           function changeStyle() {
@@ -142,13 +149,14 @@
             color,
             qrcodeInst1,
             qrcodeInst2,
-            url,
+            clientId,
+            redirectUri,
+            update,
             style,
             showLogo,
             onlyShowCode,
             changeLogo,
             changeStyle,
-            changeUrl,
             changeOnlyCode,
             handleLoad,
             handleScanned

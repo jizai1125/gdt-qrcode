@@ -2,13 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { GdtQRCode, VGdtQRCode, type QRCodeOptions, type QRCodeInst } from '../src'
 
+const clientId = ref()
+const redirectUri = ref()
 // --- 1. js 方法加载
 const qrcodeContainerRef = ref<HTMLElement>()
 const qrcodeInst1 = ref<QRCodeInst>()
 onMounted(() => {
   qrcodeInst1.value = new GdtQRCode(qrcodeContainerRef.value!, {
-    clientId: 'xs_jcsc_dingoa',
-    redirectUri: 'http://195.195.32.162:9000',
+    clientId: clientId.value,
+    redirectUri: redirectUri.value,
     onScanned(code: string) {
       console.log('js 方法扫码成功', code)
     }
@@ -23,16 +25,13 @@ function handleLoad(inst: QRCodeInst) {
 function handleScanned(code: string) {
   console.log('vue event 扫码成功', code)
 }
-const defaultUrl =
-  'https://login-pro.ding.zj.gov.cn/oauth2/auth.htm?response_type=code&scope=get_user_info&authType=QRCODE&embedMode=true'
-const url = ref(defaultUrl)
-const toggleUrl = ref(false)
-function changeUrl() {
-  url.value = toggleUrl.value ? defaultUrl : 'https://login-pro.ding.zj.gov.cn/xxxx'
-  qrcodeInst1.value?.updateUrl(url.value)
-  toggleUrl.value = !toggleUrl.value
-}
 
+function update() {
+  qrcodeInst1.value?.update({
+    clientId: clientId.value,
+    redirectUri: redirectUri.value
+  })
+}
 const style = ref<QRCodeOptions>({ width: '100%', height: 320 })
 const toggleStyle = ref(false)
 function changeStyle() {
@@ -60,8 +59,18 @@ function destroy() {
 
 <template>
   <div class="app-container">
+    <div class="input-bar">
+      <div class="input-item">
+        <span class="label">client id：</span>
+        <input type="text" v-model="clientId" />
+      </div>
+      <div class="input-item">
+        <span class="label">redirect uri：</span>
+        <input type="text" v-model="redirectUri" />
+      </div>
+    </div>
     <div class="action-bar">
-      <button @click="changeUrl">change url</button>
+      <button @click="update">update</button>
       <button @click="changeOnlyCode">only show code | {{ onlyShowCode }}</button>
       <button @click="changeLogo">show logo | {{ showLogo }}</button>
       <button @click="changeStyle">
@@ -82,9 +91,8 @@ function destroy() {
     <div class="qrcode-container">
       <VGdtQRCode
         class="bordered"
-        :url="url"
-        client-id="xs_jcsc_dingoa"
-        redirect-uri="http://195.195.32.162:9000"
+        :client-id="clientId"
+        :redirect-uri="redirectUri"
         :only-show-code="onlyShowCode"
         :show-logo="showLogo"
         :width="style.width"
@@ -109,6 +117,14 @@ function destroy() {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.input-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.input-item {
+  display: flex;
 }
 .title {
   box-sizing: border-box;
