@@ -55,6 +55,15 @@ function destroy() {
   toggleDestroy.value ? qrcodeInst1.value?.render() : qrcodeInst1.value?.destroy()
   toggleDestroy.value = !toggleDestroy.value
 }
+const defaultUrl =
+  'https://login-pro.ding.zj.gov.cn/oauth2/auth.htm?response_type=code&client_id=xxx&redirect_uri=http://xxx&scope=get_user_info&authType=QRCODE&embedMode=true'
+const url = ref()
+const toggleUrl = ref(true)
+function changeUrl() {
+  url.value = toggleUrl.value ? defaultUrl : undefined
+  // qrcodeInst1.value?.updateUrl(url.value)
+  toggleUrl.value = !toggleUrl.value
+}
 </script>
 
 <template>
@@ -68,9 +77,10 @@ function destroy() {
         <span class="label">redirect uri：</span>
         <input type="text" v-model="redirectUri" />
       </div>
+      <button @click="update">update</button>
     </div>
     <div class="action-bar">
-      <button @click="update">update</button>
+      <button @click="changeUrl">change url</button>
       <button @click="changeOnlyCode">only show code | {{ onlyShowCode }}</button>
       <button @click="changeLogo">show logo | {{ showLogo }}</button>
       <button @click="changeStyle">
@@ -89,6 +99,7 @@ function destroy() {
 
     <h3 class="title">方式二：使用 Vue 组件</h3>
     <div class="qrcode-container">
+      <!-- :url="url" -->
       <VGdtQRCode
         class="bordered"
         :client-id="clientId"
