@@ -1,3 +1,12 @@
+## [1.0.5](https://github.com/jizai1125/gdt-qrcode/compare/v1.0.4...v1.0.5) (2024-05-20)
+
+
+### Bug Fixes
+
+* messageHandler this bind ([7ec2cc8](https://github.com/jizai1125/gdt-qrcode/commit/7ec2cc87faceb1c50447d304292afdfa91cb3d4a))
+
+
+
 ## [1.0.4](https://github.com/jizai1125/gdt-qrcode/compare/v1.0.3...v1.0.4) (2024-05-19)
 
 

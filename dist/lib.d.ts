@@ -14,7 +14,7 @@ export declare class GdtQRCode {
     updateStyle(options?: QRCodeStyleOptions): void;
     destroy(): void;
     private formatUrl;
-    private offMessage;
     private registerMessage;
+    private offMessage;
     private messageHandler;
 }

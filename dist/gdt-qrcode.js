@@ -1,6 +1,6 @@
 var L = Object.defineProperty;
 var S = (o, e, t) => e in o ? L(o, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : o[e] = t;
-var a = (o, e, t) => (S(o, typeof e != "symbol" ? e + "" : e, t), t);
+var d = (o, e, t) => (S(o, typeof e != "symbol" ? e + "" : e, t), t);
 import { defineComponent as _, mergeDefaults as b, ref as p, watch as f, onMounted as v, onUnmounted as U, openBlock as k, createElementBlock as M } from "vue";
 function O(o, e, t = !0) {
   const i = new URL(o);
@@ -24,11 +24,15 @@ const y = "https://login-pro.ding.zj.gov.cn", u = {
 };
 class E {
   constructor(e, t) {
-    a(this, "dom");
-    a(this, "domClassName", "gdt-qrcode-wrapper");
-    a(this, "options", u);
-    a(this, "iframe");
-    a(this, "url");
+    d(this, "dom");
+    d(this, "domClassName", "gdt-qrcode-wrapper");
+    d(this, "options", u);
+    d(this, "iframe");
+    d(this, "url");
+    d(this, "messageHandler", (e) => {
+      var t, i;
+      this.options && e.origin.match(this.options.domain) && ((i = (t = this.options).onScanned) == null || i.call(t, e.data.code, e.data));
+    });
     this.options = {
       ...u,
       ...t
@@ -69,15 +73,11 @@ class E {
       redirect_uri: t
     });
   }
-  offMessage() {
-    window.removeEventListener("message", this.messageHandler);
-  }
   registerMessage() {
     this.offMessage(), window.addEventListener("message", this.messageHandler);
   }
-  messageHandler(e) {
-    var t, i;
-    this.options && e.origin.match(this.options.domain) && ((i = (t = this.options).onScanned) == null || i.call(t, e.data.code, e.data));
+  offMessage() {
+    window.removeEventListener("message", this.messageHandler);
   }
 }
 const x = /* @__PURE__ */ _({
@@ -102,11 +102,11 @@ const x = /* @__PURE__ */ _({
     }
     f(
       [() => t.url, () => t.clientId, () => t.redirectUri],
-      ([s, d, c]) => {
+      ([s, a, c]) => {
         var l;
         (l = n.value) == null || l.update({
           url: s,
-          clientId: d,
+          clientId: a,
           redirectUri: c
         }), h();
       }
@@ -118,19 +118,19 @@ const x = /* @__PURE__ */ _({
         () => t.showLogo,
         () => t.blockLine
       ],
-      ([s, d, c, l, C]) => {
+      ([s, a, c, l, C]) => {
         var m;
         (m = n.value) == null || m.updateStyle({
           width: s,
-          height: d,
+          height: a,
           onlyShowCode: c,
           showLogo: l,
           blockLine: C
         });
       }
     );
-    function w(s, d) {
-      i("scanned", s, d);
+    function w(s, a) {
+      i("scanned", s, a);
     }
     return v(() => {
       n.value = new E(r.value, {
@@ -140,7 +140,7 @@ const x = /* @__PURE__ */ _({
     }), U(() => {
       var s;
       (s = n.value) == null || s.destroy();
-    }), (s, d) => (k(), M("div", {
+    }), (s, a) => (k(), M("div", {
       ref_key: "qrcodeContainerRef",
       ref: r
     }, null, 512));
