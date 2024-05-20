@@ -84,14 +84,14 @@ export class GdtQRCode {
       redirect_uri: redirectUri
     })
   }
-  private offMessage(): void {
-    window.removeEventListener('message', this.messageHandler)
-  }
   private registerMessage(): void {
     this.offMessage()
     window.addEventListener('message', this.messageHandler)
   }
-  private messageHandler(evt: MessageEvent): void {
+  private offMessage(): void {
+    window.removeEventListener('message', this.messageHandler)
+  }
+  private messageHandler = (evt: MessageEvent) => {
     if (this.options && evt.origin.match(this.options.domain!)) {
       this.options.onScanned?.(evt.data.code, evt.data)
     }
